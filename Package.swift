@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "ZeroChomageWeb",
     platforms: [
-       .macOS(.v10_15)
+        .macOS(.v12)
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
@@ -12,6 +12,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0"),
+        .package(url: "https://github.com/vayset/ZeroChomageWebShared.git", from: "0.1.2")
     ],
     targets: [
         .target(
@@ -20,7 +21,8 @@ let package = Package(
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Leaf", package: "leaf"),
-                .product(name: "Vapor", package: "vapor")
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "ZeroChomageWebShared", package: "ZeroChomageWebShared")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
