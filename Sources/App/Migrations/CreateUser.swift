@@ -15,6 +15,9 @@ struct CreateUser: Migration {
             .field("date_of_birth", .string)
             .field("gender", .string)
             .field("civil_status", .string)
+            .field("is_admin", .bool, .required)
+            .field("is_already_filled", .bool, .required)
+            .field("is_validated", .bool, .required)
             .unique(on: "email")
             .create()
     }

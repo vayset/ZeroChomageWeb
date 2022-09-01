@@ -15,9 +15,33 @@ func routes(_ app: Application) throws {
     let apiVersionGroup = app.grouped("api", "v1")
     let apiProtectedGroup = apiVersionGroup.grouped(UserToken.authenticator())
     
-    apiProtectedGroup.get("protected") { req -> String in
+    apiProtectedGroup.get("user-account-info") { req -> User in
         let authenticatedUser = try req.auth.require(User.self)
-        return "This page is protected by authentication. Authenticated User is \(authenticatedUser.email)"
+        return authenticatedUser
+    }
+    
+    apiProtectedGroup.post("questionnaire-upload") { req -> HTTPStatus in
+        let authenticatedUser = try req.auth.require(User.self)
+        
+        
+        let questionnaire = try req.content.decode(QuestionnaireRequestBody.self)
+        
+        
+        authenticatedUser.lastName = questionnaire.lastName
+        authenticatedUser.firstname = questionnaire.firstName
+        authenticatedUser.address = questionnaire.address
+        authenticatedUser.zipCode = questionnaire.zipCode
+        authenticatedUser.city = questionnaire.city
+
+        authenticatedUser.phoneNumber = questionnaire.phoneNumber
+        authenticatedUser.dateOfBirth = questionnaire.dateOfBirth
+        authenticatedUser.isAlreadyFilled = questionnaire.isAlreadyFilled
+        authenticatedUser.gender = questionnaire.gender
+        authenticatedUser.civilStatus = questionnaire.civilStatus
+        
+        try await authenticatedUser.update(on: req.db)
+        
+        return .accepted
     }
     
     
@@ -55,10 +79,9 @@ func routes(_ app: Application) throws {
         
         
         let user = User(
-            email: signUpRequest.email,
+            email: signUpRequest.email.lowercased(),
             passwordHash: try Bcrypt.hash(signUpRequest.password)
         )
-    
         
         try await user.create(on: req.db)
         
@@ -67,6 +90,7 @@ func routes(_ app: Application) throws {
     
         return SignUpResponse(userToken: userToken.value)
     }
+
 
     try app.register(collection: UserController())
 }
@@ -110,4 +134,19 @@ public struct SignUpRequest: Codable {
 
 }
 
+
+
+
+struct QuestionnaireRequestBody: Decodable {
+    let lastName: String
+    let firstName: String
+    let address: String
+    let zipCode: String
+    let city: String
+    let phoneNumber: String
+    let dateOfBirth: String
+    let isAlreadyFilled: Bool
+    let gender: String
+    let civilStatus: String
+}
 

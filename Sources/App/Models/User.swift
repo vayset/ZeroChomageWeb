@@ -20,7 +20,7 @@ final class User: Model, Content {
     var lastName: String?
     
     @OptionalField(key: "address")
-    var adresse: String?
+    var address: String?
     
     @OptionalField(key: "zip_code")
     var zipCode: String?
@@ -40,6 +40,15 @@ final class User: Model, Content {
     @OptionalField(key: "civil_status")
     var civilStatus: String?
     
+    @Field(key: "is_admin")
+    var isAdmin: Bool
+    
+    @Field(key: "is_already_filled")
+    var isAlreadyFilled: Bool
+    
+    @Field(key: "is_validated")
+    var isValidated: Bool
+    
 
     
     
@@ -52,26 +61,32 @@ final class User: Model, Content {
         email: String,
         passwordHash: String,
         lastName: String? = nil,
-        addresse: String? = nil,
+        address: String? = nil,
         zipCode: String? = nil,
         city: String? = nil,
         phoneNumber: String? = nil,
         dateOfBirth: String? = nil,
         gender: String? = nil,
-        civilStatus: String? = nil
+        civilStatus: String? = nil,
+        isAdmin: Bool = false,
+        isAlreadyFilled: Bool = false,
+        isValidated: Bool = false
     ) {
         self.id = id
         self.passwordHash = passwordHash
         self.firstname = firstname
         self.email = email
         self.lastName = lastName
-        self.adresse = addresse
+        self.address = address
         self.zipCode = zipCode
         self.city = city
         self.phoneNumber = phoneNumber
         self.dateOfBirth = dateOfBirth
         self.gender = gender
         self.civilStatus = civilStatus
+        self.isAdmin = isAdmin
+        self.isAlreadyFilled = isAlreadyFilled
+        self.isValidated = isValidated
     }
 }
 
