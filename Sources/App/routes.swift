@@ -13,7 +13,13 @@ func routes(_ app: Application) throws {
     
     
     let apiVersionGroup = app.grouped("api", "v1")
-    let apiProtectedGroup = apiVersionGroup.grouped(UserToken.authenticator())
+    
+    let apiProtectedGroup = apiVersionGroup
+        .grouped(UserToken.authenticator())
+        .grouped(User.guardMiddleware())
+    
+    try apiProtectedGroup.register(collection: UserController())
+    try apiProtectedGroup.register(collection: NewsController())
     
     apiProtectedGroup.get("user-account-info") { req -> User in
         let authenticatedUser = try req.auth.require(User.self)
@@ -92,7 +98,7 @@ func routes(_ app: Application) throws {
     }
 
 
-    try app.register(collection: UserController())
+
 }
 
 
