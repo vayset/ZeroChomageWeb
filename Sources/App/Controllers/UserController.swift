@@ -10,6 +10,9 @@ struct UserController: RouteCollection {
         userRoutes.group(":userID") { user in
             user.delete(use: delete)
         }
+        
+        let validateGroup = userRoutes.grouped("validate")
+        validateGroup.post(use: validateUserIndex)
     }
     
 
@@ -28,4 +31,35 @@ struct UserController: RouteCollection {
             .flatMap { $0.delete(on: req.db) }
             .transform(to: .ok)
     }
+    
+    
+    func validateUserIndex(req: Request) async throws -> HTTPStatus {
+        let authenticatedUser = try req.auth.require(User.self)
+        guard authenticatedUser.isAdmin else { throw Abort(.unauthorized) }
+        
+        
+        let validateUserBody = try req.content.decode(ValidateUserBody.self)
+        
+        let validateUserEmail = validateUserBody.userToValidateEmail
+        
+        
+        guard let userToValidate = try await User
+            .query(on: req.db)
+            .filter(\.$email == validateUserEmail)
+            .first()
+        else {
+            throw Abort(.notFound)
+        }
+        
+        userToValidate.isValidated = true
+        
+        try await userToValidate.update(on: req.db)
+        
+        return .accepted
+    }
+}
+
+
+struct ValidateUserBody: Decodable {
+    let userToValidateEmail: String
 }

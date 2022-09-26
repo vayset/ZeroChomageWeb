@@ -14,6 +14,7 @@ struct CreateNews: Migration {
             .field("titleNews", .string, .required)
             .field("descriptionNews", .string, .required)
             .field("bodyNews", .string, .required)
+            .field("createdAt", .string)
             .create()
     }
 
